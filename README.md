@@ -1,3 +1,5 @@
+[![Dockerfile Build and Push](https://github.com/NeckBeardPrince/simple-fibonacci-app/actions/workflows/build.yml/badge.svg)](https://github.com/NeckBeardPrince/simple-fibonacci-app/actions/workflows/build.yml)
+
 # Fibonacci Web Server
 
 Simple Fibonacci web server.
