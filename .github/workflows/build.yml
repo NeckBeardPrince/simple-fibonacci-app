@@ -2,9 +2,13 @@ name: Dockerfile Build and Push
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
+      - dev
   pull_request:
-    branches: ["main"]
+    branches:
+      - main
+      - dev
 
 jobs:
   build-push:
@@ -19,6 +23,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: python
+          context: .
+          file: python/Dockerfile
           push: true
           tags: neckbeardprince/simple-fibonacci-app:v0.0.1
