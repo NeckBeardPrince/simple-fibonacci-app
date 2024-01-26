@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "chart.fullname" . }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.hpa.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      {{- include "chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "chart.selectorLabels" . | nindent 8 }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.service.httpPort }}"
+        {{- range $key, $value := .Values.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+    spec:
+      terminationGracePeriodSeconds: 30
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ template "chart.fullname" . }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.httpPort | default 8000 }}
+              protocol: TCP
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

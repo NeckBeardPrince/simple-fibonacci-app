@@ -1,13 +1,63 @@
-# Default values for chart.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+# Default values for simple-fibonacci-app
 
-# replicaCount: 1
+replicaCount: 4
 
-# image:
-#   repository:
-#   pullPolicy:
-#   tag:
+image:
+  repository: neckbeardprince/simple-fibonacci-app
+  tag: v0.0.1
+  pullPolicy: IfNotPresent
 
-# service:
-#   port: 8000
+# Kubernetes Service settings
+service:
+  enabled: true
+  annotations: {}
+  type: ClusterIP
+  httpPort: 8000
+
+# metrics-server add-on required
+hpa:
+  enabled: false
+  maxReplicas: 10
+  # average total CPU usage per pod (1-100)
+  cpu: 50m
+  # average memory usage per pod (100Mi-1Gi)
+  memory: 150m
+  # average http requests per second per pod (k8s-prometheus-adapter)
+  requests: 10
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  enabled: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+  # List of image pull secrets if pulling from private registries
+  imagePullSecrets: []
+
+ingress:
+  enabled: false
+  className: ""
+  additionalLabels: {}
+  annotations:
+    {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: podinfo.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+
+resources:
+  limits:
+  requests:
+    cpu: 1m
+    memory: 16Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+podAnnotations: {}
